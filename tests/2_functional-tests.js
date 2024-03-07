@@ -60,7 +60,7 @@ suite('Functional Tests', function() {
       })
       .end(function(err,res) {
         assert.equal(res.status,400);
-        assert.equal(res.body.result, 'required field(s) missing');
+        assert.equal(res.body.error, 'required field(s) missing');
         done();
       });
   });
