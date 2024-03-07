@@ -15,8 +15,6 @@ module.exports = function (app) {
 
   if (!myDataBase) {
     console.error('Database not initialized');
-  } else {
-    next();
   }
 
   app.route('/api/issues/:project')

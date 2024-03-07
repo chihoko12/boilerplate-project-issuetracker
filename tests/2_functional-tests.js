@@ -5,6 +5,8 @@ const server = require('../server');
 
 chai.use(chaiHttp);
 
+let firstIssueId;
+
 suite('Functional Tests', function() {
 
   test('Create an issue with every field', function(done) {
@@ -58,6 +60,7 @@ suite('Functional Tests', function() {
       })
       .end(function(err,res) {
         assert.equal(res.status,400);
+        assert.equal(res.body.result, 'required field(s) missing');
         done();
       });
   });
@@ -69,6 +72,12 @@ suite('Functional Tests', function() {
       .end(function(err,res) {
         assert.equal(res.status, 200);
         assert.isArray(res.body);
+
+        if (res.body.length > 0) {
+          firstIssueId = res.body[0]._id;
+        } else {
+          firstIssueId = null;
+        }
         done();
       });
   });
@@ -105,7 +114,7 @@ suite('Functional Tests', function() {
       .request(server)
       .put('/api/issues/apitest')
       .send({
-        _id: "valid_id",
+        _id: firstIssueId,
         issue_title: "Update Title"
       })
       .end(function(err,res) {
@@ -120,7 +129,7 @@ suite('Functional Tests', function() {
       .request(server)
       .put('/api/issues/apitest')
       .send({
-        _id: "valid_id",
+        _id: firstIssueId,
         issue_title: "Updated Title",
         issue_text: "Updated Text",
         assigned_to: "Updated Assignee"
@@ -177,7 +186,7 @@ suite('Functional Tests', function() {
       .request(server)
       .delete('/api/issues/apitest')
       .send({
-        _id: 'valid_id',
+        _id: firstIssueId,
       })
       .end(function(err,res) {
         assert.equal(res.status,200);
