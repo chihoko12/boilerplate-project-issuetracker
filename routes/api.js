@@ -2,18 +2,21 @@
 const { ObjectId } = require('mongodb');
 const myDB = require('../connection');
 
+let myDataBase;
 
 myDB().then(client => {
-  db = client.db('database');
-}).catch(err => console.error("Database connection failed", err));
+  myDataBase = client.db('database');
+  console.log('Database connection established');
+}).catch(err => {
+  console.error("Database connection failed", err)
+});
 
 module.exports = function (app) {
 
-  const getDb = () => {
-    if (!db) {
-      throw new Error('Database not initialized');
-    }
-    return db;
+  if (!myDataBase) {
+    console.error('Database not initialized');
+  } else {
+    next();
   }
 
   app.route('/api/issues/:project')
@@ -42,7 +45,7 @@ module.exports = function (app) {
       }
 
       // fetch issued from the database based on projects and filter
-      db.collection(project).find(filter).toArray(function(err,issues) {
+      myDataBase.collection(project).find(filter).toArray(function(err,issues) {
         if (err) {
           res.status(404).json({ error: 'Issue not found' });
         } else {
@@ -79,9 +82,9 @@ module.exports = function (app) {
         status_text: status_text || ''
       };
 
-      console.log(db);
+      console.log(myDataBase);
       // insert the new issue into the database
-      db.collection(project).insertOne(newIssue, function(err,result) {
+      myDataBase.collection(project).insertOne(newIssue, function(err,result) {
         if (err) {
           res.status(400).json({ error: 'could not create an issue' });
         } else {
@@ -135,7 +138,7 @@ module.exports = function (app) {
       updateFields.updated_on = new Date();
 
       // update the issue in the database
-      db.collection(project).updateOne({ _id: ObjectId(_id)}, { $set: updateFields }, function(err, result) {
+      myDataBase.collection(project).updateOne({ _id: ObjectId(_id)}, { $set: updateFields }, function(err, result) {
         if (err) {
           res.status(400).json({ error: 'could not update', '_id': _id });
         } else {
@@ -158,7 +161,7 @@ module.exports = function (app) {
       }
 
       // delete the issue from the database
-      db.collection(project).deleteOne({ _id: ObjectId(_id) }, function(err, result) {
+      myDataBase.collection(project).deleteOne({ _id: ObjectId(_id) }, function(err, result) {
         if (err) {
           res.status(400).json({ error: 'could not delete', '_id': _id });
         } else {
