@@ -82,7 +82,6 @@ module.exports = function (app) {
         status_text: status_text || ''
       };
 
-      console.log(myDataBase);
       // insert the new issue into the database
       myDataBase.collection(project).insertOne(newIssue, function(err,result) {
         if (err) {
@@ -105,7 +104,7 @@ module.exports = function (app) {
       } = req.body;
 
       // validate _id
-      if (!_id) {
+      if (!_id || !ObjectId.isValid(_id)) {
         return res.status(400).json({ error: 'missing _id' });
       }
 
@@ -156,7 +155,7 @@ module.exports = function (app) {
       const { _id } = req.body;
 
       //validate _id
-      if (!_id) {
+      if (!_id || !ObjectId.isValid(_id)) {
         return res.status(400).json({ error: 'missing _id' });
       }
 
