@@ -89,7 +89,7 @@ suite('Functional Tests', function() {
   test('View issues on a project with multiple filters', function(done) {
     chai
       .request(server)
-      .get('/api/issuesapitest')
+      .get('/api/issues/apitest')
       .query({
         open: true,
         assigned_to: 'Joe'
@@ -160,14 +160,14 @@ suite('Functional Tests', function() {
 
   test('Update an issue with an invalid _id', function(done) {
     chai
-      .reqeust(server)
-      .put('/api/issues/{projetcs}')
+      .request(server)
+      .put('/api/issues/apitest')
       .send({
         _id: 'invalid_id',
         issue_title: 'Updated Title'
       })
       .end(function(err,res) {
-        assert.equal(res.status,404);
+        assert.equal(res.status,400);
         done();
       });
   });
@@ -194,7 +194,7 @@ suite('Functional Tests', function() {
         _id: "invalid_id",
       })
       .end(function(err,res) {
-        assert.equal(res.status,404);
+        assert.equal(res.status,400);
         done();
       });
   });
